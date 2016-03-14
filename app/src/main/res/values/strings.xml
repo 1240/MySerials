@@ -2,4 +2,5 @@
     <string name="app_name">MySerials</string>
     <string name="title_serial_detail">Serial Detail</string>
     <string name="search_hint">search...</string>
+    <string name="image">image</string>
 </resources>

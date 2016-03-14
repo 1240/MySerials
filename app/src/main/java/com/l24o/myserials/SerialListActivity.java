@@ -1,41 +1,38 @@
 package com.l24o.myserials;
 
+import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.view.LayoutInflater;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.l24o.myserials.models.Serial;
+import com.l24o.myserials.realm.RealmHelper;
+import com.l24o.myserials.retrofit.loaders.RetorfitLoader;
+import com.l24o.myserials.retrofit.response.Response;
 
-import com.l24o.myserials.dummy.DummyContent;
+import io.realm.Realm;
 
-import java.util.List;
-
-/**
- * An activity representing a list of Serials. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link SerialDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
-public class SerialListActivity extends AppCompatActivity {
+public class SerialListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Response> {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
+    private int from = 1;
+    private boolean byLike = false;
+    private SerialRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +43,18 @@ public class SerialListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (byLike) {
+                    fab.setImageResource(R.drawable.ic_favorite_border_white_48dp);
+                    Snackbar.make(view, "Now sort by name", Snackbar.LENGTH_LONG).show();
+                } else {
+                    fab.setImageResource(R.drawable.ic_favorite_white_48dp);
+                    Snackbar.make(view, "Now sort by liked", Snackbar.LENGTH_LONG).show();
+                }
+                byLike = !byLike;
             }
         });
 
@@ -60,10 +63,6 @@ public class SerialListActivity extends AppCompatActivity {
         setupRecyclerView((RecyclerView) recyclerView);
 
         if (findViewById(R.id.serial_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             mTwoPane = true;
         }
     }
@@ -71,79 +70,57 @@ public class SerialListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_main, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        if (null != searchManager) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        }
+        searchView.setIconifiedByDefault(false);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return true;
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        adapter = new SerialRecyclerViewAdapter(RealmHelper.getByClass(Realm.getInstance(this), Serial.class, byLike), mTwoPane, this);
+        recyclerView.setAdapter(adapter);
     }
 
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
-
-        private final List<DummyContent.DummyItem> mValues;
-
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-            mValues = items;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.serial_list_content, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
-
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(SerialDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-                        SerialDetailFragment fragment = new SerialDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.serial_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, SerialDetailActivity.class);
-                        intent.putExtra(SerialDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
-                        context.startActivity(intent);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
-            }
+    @Override
+    public Loader<Response> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case R.id.action_search:
+                return new RetorfitLoader(this, from - 1);
+            default:
+                return null;
         }
     }
+
+    @Override
+    public void onLoadFinished(Loader<Response> loader, Response data) {
+        int id = loader.getId();
+        if (id == R.id.loader) {
+            adapter.notifyDataSetChanged();
+        }
+        getLoaderManager().destroyLoader(id);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Response> loader) {
+
+    }
+
+
 }

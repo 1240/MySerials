@@ -24,5 +24,4 @@
         <item name="queryHint">@string/search_hint</item>
         <item name="android:imeActionId">6</item>
     </style>
-
 </resources>

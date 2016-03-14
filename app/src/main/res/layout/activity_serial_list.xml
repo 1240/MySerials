@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/btn_star_big_off"
+        android:src="@drawable/ic_favorite_border_white_48dp"
         android:background="@null" />
 
 
