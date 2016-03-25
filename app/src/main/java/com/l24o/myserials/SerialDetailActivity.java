@@ -14,6 +14,7 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
+import com.l24o.myserials.adapters.SeriesPageAdapter;
 import com.l24o.myserials.models.Season;
 import com.l24o.myserials.models.Serial;
 import com.l24o.myserials.realm.RealmHelper;

@@ -1,4 +1,4 @@
-package com.l24o.myserials;
+package com.l24o.myserials.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,11 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.l24o.myserials.R;
 import com.l24o.myserials.models.Episode;
 import com.l24o.myserials.models.TranslateTeam;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 

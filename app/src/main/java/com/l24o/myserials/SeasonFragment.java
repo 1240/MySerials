@@ -11,9 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.l24o.myserials.adapters.MySeasonRecyclerViewAdapter;
+import com.l24o.myserials.adapters.SeriesPageAdapter;
 import com.l24o.myserials.models.Season;
 import com.l24o.myserials.models.Serial;
 import com.l24o.myserials.realm.RealmHelper;
+import com.l24o.myserials.utils.SimpleDividerItemDecoration;
 
 import io.realm.Realm;
 

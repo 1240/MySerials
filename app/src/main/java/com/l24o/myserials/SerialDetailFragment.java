@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.l24o.myserials.adapters.SeriesPageAdapter;
 import com.l24o.myserials.models.Serial;
 import com.l24o.myserials.realm.RealmHelper;
 

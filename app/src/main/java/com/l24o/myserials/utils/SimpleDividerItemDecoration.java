@@ -1,10 +1,12 @@
-package com.l24o.myserials;
+package com.l24o.myserials.utils;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import com.l24o.myserials.R;
 
 /**
  * Created by l24o on 25.03.16.

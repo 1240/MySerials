@@ -1,4 +1,4 @@
-package com.l24o.myserials;
+package com.l24o.myserials.adapters;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 
+import com.l24o.myserials.SeasonFragment;
+import com.l24o.myserials.SerialDetailFragment;
 import com.l24o.myserials.models.Serial;
 
 /**

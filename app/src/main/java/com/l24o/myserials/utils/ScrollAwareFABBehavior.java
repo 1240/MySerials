@@ -1,4 +1,4 @@
-package com.l24o.myserials;
+package com.l24o.myserials.utils;
 
 import android.content.Context;
 import android.os.Build;

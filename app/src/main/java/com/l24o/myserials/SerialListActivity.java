@@ -16,10 +16,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.l24o.myserials.adapters.SerialRecyclerViewAdapter;
 import com.l24o.myserials.models.Serial;
 import com.l24o.myserials.realm.RealmHelper;
 import com.l24o.myserials.retrofit.loaders.RetorfitLoader;
 import com.l24o.myserials.retrofit.response.Response;
+import com.l24o.myserials.utils.SimpleDividerItemDecoration;
 
 import io.realm.Realm;
 
@@ -58,7 +60,7 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
             }
         });
 
-        View recyclerView = findViewById(R.id.serial_list);
+        View recyclerView = (RecyclerView)findViewById(R.id.serial_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
@@ -96,7 +98,9 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
+        recyclerView.setHasFixedSize(true);
         adapter = new SerialRecyclerViewAdapter(RealmHelper.getByClass(Realm.getInstance(this), Serial.class, byLike), mTwoPane, this);
+
         recyclerView.setAdapter(adapter);
     }
 
