@@ -54,7 +54,7 @@ public class SerialRecyclerViewAdapter extends RecyclerView.Adapter<SerialRecycl
             public void onClick(View v) {
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(SerialDetailFragment.ARG_ITEM_ID, holder.mItem.getCode());
+                    arguments.putString(SeriesPageAdapter.ARG_ITEM_ID, holder.mItem.getCode());
                     SerialDetailFragment fragment = new SerialDetailFragment();
                     fragment.setArguments(arguments);
                     activity.getSupportFragmentManager().beginTransaction()
@@ -63,7 +63,7 @@ public class SerialRecyclerViewAdapter extends RecyclerView.Adapter<SerialRecycl
                 } else {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, SerialDetailActivity.class);
-                    intent.putExtra(SerialDetailFragment.ARG_ITEM_ID, holder.mItem.getCode());
+                    intent.putExtra(SeriesPageAdapter.ARG_ITEM_ID, holder.mItem.getCode());
                     context.startActivity(intent);
                 }
             }

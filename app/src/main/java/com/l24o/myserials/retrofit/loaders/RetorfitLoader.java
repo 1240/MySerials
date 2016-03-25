@@ -20,16 +20,18 @@ import retrofit2.Call;
 public class RetorfitLoader extends BaseLoader {
 
     private final int from;
+    private final String keyword;
 
-    public RetorfitLoader(Context context, int from) {
+    public RetorfitLoader(Context context, int from, String keyword) {
         super(context);
         this.from = from;
+        this.keyword = keyword;
     }
 
     @Override
     protected Response apiCall() throws IOException {
         RetrofitService service = ApiFactory.getService();
-        Call<List<Serial>> call = service.getSerials(from * 20, 20);
+        Call<List<Serial>> call = service.getSerials(keyword, from * 20, 20);
         List<Serial> serials = call.execute().body();
         return new SerialResponse()
                 .setRequestResult(RequestResult.SUCCESS)

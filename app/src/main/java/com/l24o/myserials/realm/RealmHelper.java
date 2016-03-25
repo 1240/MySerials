@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.Sort;
 
 /**
  * Created by chuff on 14.03.2016.
@@ -20,19 +21,19 @@ public class RealmHelper {
         if (sort) {
             return realm.allObjects(clazz);
         } else {
-            return realm.allObjectsSorted(clazz, "checked", true);
+            return realm.allObjectsSorted(clazz, "checked", Sort.ASCENDING);
         }
     }
 
     public static <T extends RealmObject> void save(@NonNull Realm realm, List<T> data) {
         realm.beginTransaction();
-        realm.copyToRealm(data);
+        realm.copyToRealmOrUpdate(data);
         realm.commitTransaction();
     }
 
     public static <T extends RealmObject> void save(@NonNull Realm realm, T data) {
         realm.beginTransaction();
-        realm.copyToRealm(data);
+        realm.copyToRealmOrUpdate(data);
         realm.commitTransaction();
     }
 

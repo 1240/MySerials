@@ -4,6 +4,7 @@ import java.util.Date;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by l24o on 18.03.16.
@@ -11,6 +12,8 @@ import io.realm.RealmObject;
 public class Episode extends RealmObject {
 
     private String name;
+
+    @PrimaryKey
     private String code;
     private String rating;
     private Date date;

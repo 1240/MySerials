@@ -2,12 +2,14 @@ package com.l24o.myserials.models;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by chuff on 14.03.2016.
  */
 public class Serial extends RealmObject {
 
+    @PrimaryKey
     private String code;
     private String name;
     private String url;

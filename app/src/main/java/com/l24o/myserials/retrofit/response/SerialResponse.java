@@ -5,6 +5,8 @@ import android.content.Context;
 import com.l24o.myserials.models.Serial;
 import com.l24o.myserials.realm.RealmHelper;
 
+import java.util.List;
+
 import io.realm.Realm;
 
 /**
@@ -14,9 +16,9 @@ public class SerialResponse extends Response {
 
     @Override
     public void save(Context context) {
-        Serial serial = getTypedAnswer();
-        if (serial != null) {
-                RealmHelper.save(Realm.getInstance(context), serial);
+        List<Serial> serials = getTypedAnswer();
+        if (serials != null) {
+                RealmHelper.save(Realm.getInstance(context), serials);
         }
     }
 }

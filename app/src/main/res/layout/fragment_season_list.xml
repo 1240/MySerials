@@ -2,10 +2,10 @@
 <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/serial_list"
-    android:name="com.l24o.myserials.SerialListFragment"
+    android:id="@+id/list"
+    android:name="com.l24o.myserials.SeasonFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.l24o.myserials.SerialListActivity"
-    tools:listitem="@layout/serial_list_content" />
+    tools:context="com.l24o.myserials.SeasonFragment"
+    tools:listitem="@layout/fragment_season_child" />

@@ -65,6 +65,7 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
         if (findViewById(R.id.serial_detail_container) != null) {
             mTwoPane = true;
         }
+        getSupportLoaderManager().initLoader(R.id.loader, null, this);
     }
 
     @Override
@@ -94,6 +95,7 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
         adapter = new SerialRecyclerViewAdapter(RealmHelper.getByClass(Realm.getInstance(this), Serial.class, byLike), mTwoPane, this);
         recyclerView.setAdapter(adapter);
     }
@@ -101,8 +103,8 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
     @Override
     public Loader<Response> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case R.id.action_search:
-                return new RetorfitLoader(this, from - 1);
+            case R.id.loader:
+                return new RetorfitLoader(this, from - 1, "");
             default:
                 return null;
         }

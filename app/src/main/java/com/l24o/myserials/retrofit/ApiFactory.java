@@ -6,6 +6,14 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+
+import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.util.Date;
 
 import io.realm.RealmObject;
 import retrofit2.Retrofit;
@@ -17,6 +25,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiFactory {
 
     private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+                public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                    return new Date(json.getAsJsonPrimitive().getAsLong());
+                }
+            })
             .setExclusionStrategies(new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
@@ -35,11 +48,10 @@ public class ApiFactory {
         return getRetrofit().create(RetrofitService.class);
     }
 
-    //// TODO: 14.03.2016 add root url
     @NonNull
     private static Retrofit getRetrofit() {
         return new Retrofit.Builder()
-                .baseUrl("http://1240.github.io")
+                .baseUrl("http://192.168.1.18:8081")
                 .addConverterFactory(GsonConverterFactory.create(GSON))
                 .build();
     }
