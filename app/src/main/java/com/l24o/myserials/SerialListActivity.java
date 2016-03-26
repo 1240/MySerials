@@ -3,6 +3,7 @@ package com.l24o.myserials;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,17 +17,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.l24o.myserials.adapters.OnLoadMoreListener;
 import com.l24o.myserials.adapters.SerialRecyclerViewAdapter;
 import com.l24o.myserials.models.Serial;
 import com.l24o.myserials.realm.RealmHelper;
 import com.l24o.myserials.retrofit.loaders.RetorfitLoader;
 import com.l24o.myserials.retrofit.response.Response;
-import com.l24o.myserials.utils.SimpleDividerItemDecoration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
 
 public class SerialListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Response> {
 
+    protected Handler handler;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -35,12 +40,13 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
     private int from = 1;
     private boolean byLike = false;
     private SerialRecyclerViewAdapter adapter;
+    private List<Serial> serials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serial_list);
-
+        serials = new ArrayList<>(RealmHelper.getByClass(Realm.getInstance(this), Serial.class, byLike));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
@@ -60,14 +66,14 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
             }
         });
 
-        View recyclerView = (RecyclerView)findViewById(R.id.serial_list);
+        View recyclerView = (RecyclerView) findViewById(R.id.serial_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
         if (findViewById(R.id.serial_detail_container) != null) {
             mTwoPane = true;
         }
-        getSupportLoaderManager().initLoader(R.id.loader, null, this);
+//        getSupportLoaderManager().initLoader(R.id.loader, null, this);
     }
 
     @Override
@@ -97,17 +103,48 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
+//        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
         recyclerView.setHasFixedSize(true);
-        adapter = new SerialRecyclerViewAdapter(RealmHelper.getByClass(Realm.getInstance(this), Serial.class, byLike), mTwoPane, this);
+
+        adapter = new SerialRecyclerViewAdapter(serials, mTwoPane, this, recyclerView);
 
         recyclerView.setAdapter(adapter);
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+
+//
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //   remove progress item
+//                        serials.remove(serials.size() - 1);
+//                        adapter.notifyItemRemoved(serials.size());
+//                        //add items one by one
+//                        int start = serials.size();
+//                        int end = start + 20;
+//
+//                        for (int i = start + 1; i <= end; i++) {
+//                            serials.add(new Student("Student " + i, "AndroidStudent" + i + "@gmail.com"));
+//                            adapter.notifyItemInserted(studentList.size());
+//                        }
+//                        adapter.setLoaded();
+//                        //or you can add all at once but do not forget to call mAdapter.notifyDataSetChanged();
+//                    }
+//                }, 2000);
+                from = serials.size() + 1;
+                getSupportLoaderManager().initLoader(R.id.loader, Bundle.EMPTY, SerialListActivity.this);
+
+            }
+        });
     }
 
     @Override
     public Loader<Response> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case R.id.loader:
+                serials.add(null);
+                adapter.notifyItemInserted(serials.size() - 1);
                 return new RetorfitLoader(this, from - 1, "");
             default:
                 return null;
@@ -118,7 +155,19 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
     public void onLoadFinished(Loader<Response> loader, Response data) {
         int id = loader.getId();
         if (id == R.id.loader) {
-            adapter.notifyDataSetChanged();
+            serials.remove(serials.size() - 1);
+            adapter.notifyItemRemoved(serials.size());
+//            serials = new ArrayList<>(RealmHelper.getByClass(Realm.getInstance(this), Serial.class, byLike));
+            List<Serial> serialList = data.getTypedAnswer();
+
+            if (serialList != null) {
+                for (Serial s : serialList) {
+                    serials.add(s);
+                    adapter.notifyItemInserted(serials.size());
+                }
+            }
+            adapter.setLoaded();
+//            adapter.notifyDataSetChanged();
         }
         getLoaderManager().destroyLoader(id);
     }

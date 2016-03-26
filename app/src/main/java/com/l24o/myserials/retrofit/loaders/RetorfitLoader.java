@@ -31,7 +31,7 @@ public class RetorfitLoader extends BaseLoader {
     @Override
     protected Response apiCall() throws IOException {
         RetrofitService service = ApiFactory.getService();
-        Call<List<Serial>> call = service.getSerials(keyword, from * 20, 20);
+        Call<List<Serial>> call = service.getSerials(keyword, from/20, 20);
         List<Serial> serials = call.execute().body();
         return new SerialResponse()
                 .setRequestResult(RequestResult.SUCCESS)

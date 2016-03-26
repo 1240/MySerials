@@ -24,11 +24,15 @@ public class MySeasonRecyclerViewAdapter extends RecyclerView.Adapter<MySeasonRe
 
     @Override
     public void onBindViewHolder(VHolder holder, int position) {
-        holder.tvEpisodeCode.setText(mValues.get(position).getCode());
-        holder.tvEpisodeName.setText(mValues.get(position).getName());
-        holder.tvEpisodeDate.setText(new SimpleDateFormat("dd MMM yyyy", new Locale("ru", "RU")).format(mValues.get(position).getDate()));
+        Episode episode = mValues.get(position);
+        holder.tvEpisodeCode.setText(episode.getCode());
+        holder.tvEpisodeName.setText(episode.getName());
+        if (episode.getDate() != null)
+            holder.tvEpisodeDate.setText(new SimpleDateFormat("dd MMM yyyy", new Locale("ru", "RU")).format(episode.getDate()));
+        else
+            holder.tvEpisodeDate.setText("---");
         String teamS = "";
-        for (TranslateTeam team : mValues.get(position).getTranslateTeams()) {
+        for (TranslateTeam team : episode.getTranslateTeams()) {
             teamS += team.getName() + "; ";
         }
         holder.tvEpisodeTranslatedTeams.setText(teamS);

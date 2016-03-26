@@ -52,6 +52,7 @@ public class ApiFactory {
     private static Retrofit getRetrofit() {
         return new Retrofit.Builder()
                 .baseUrl("http://192.168.1.18:8081")
+//                .baseUrl("http://192.168.0.5:8081")
                 .addConverterFactory(GsonConverterFactory.create(GSON))
                 .build();
     }
