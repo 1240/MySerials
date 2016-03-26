@@ -37,7 +37,7 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
      * device.
      */
     private boolean mTwoPane;
-    private int from = 1;
+    private int from = 0;
     private boolean byLike = false;
     private SerialRecyclerViewAdapter adapter;
     private List<Serial> serials;
@@ -66,14 +66,18 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
             }
         });
 
-        View recyclerView = (RecyclerView) findViewById(R.id.serial_list);
+        View recyclerView = findViewById(R.id.serial_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
         if (findViewById(R.id.serial_detail_container) != null) {
             mTwoPane = true;
         }
-//        getSupportLoaderManager().initLoader(R.id.loader, null, this);
+        if (serials.isEmpty()) {
+            serials.add(null);
+            adapter.notifyItemInserted(serials.size() - 1);
+            getSupportLoaderManager().initLoader(R.id.loader, null, this);
+        }
     }
 
     @Override
@@ -112,28 +116,10 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
         adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-
-//
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        //   remove progress item
-//                        serials.remove(serials.size() - 1);
-//                        adapter.notifyItemRemoved(serials.size());
-//                        //add items one by one
-//                        int start = serials.size();
-//                        int end = start + 20;
-//
-//                        for (int i = start + 1; i <= end; i++) {
-//                            serials.add(new Student("Student " + i, "AndroidStudent" + i + "@gmail.com"));
-//                            adapter.notifyItemInserted(studentList.size());
-//                        }
-//                        adapter.setLoaded();
-//                        //or you can add all at once but do not forget to call mAdapter.notifyDataSetChanged();
-//                    }
-//                }, 2000);
-                from = serials.size() + 1;
-                getSupportLoaderManager().initLoader(R.id.loader, Bundle.EMPTY, SerialListActivity.this);
+                from = serials.size();
+                serials.add(null);
+                adapter.notifyItemInserted(serials.size() - 1);
+                getSupportLoaderManager().restartLoader(R.id.loader, Bundle.EMPTY, SerialListActivity.this);
 
             }
         });
@@ -143,9 +129,7 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
     public Loader<Response> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case R.id.loader:
-                serials.add(null);
-                adapter.notifyItemInserted(serials.size() - 1);
-                return new RetorfitLoader(this, from - 1, "");
+                return new RetorfitLoader(this, from, "");
             default:
                 return null;
         }
@@ -157,17 +141,17 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
         if (id == R.id.loader) {
             serials.remove(serials.size() - 1);
             adapter.notifyItemRemoved(serials.size());
-//            serials = new ArrayList<>(RealmHelper.getByClass(Realm.getInstance(this), Serial.class, byLike));
             List<Serial> serialList = data.getTypedAnswer();
 
             if (serialList != null) {
                 for (Serial s : serialList) {
-                    serials.add(s);
-                    adapter.notifyItemInserted(serials.size());
+                    if (!contains(serials, s)) {
+                        serials.add(s);
+                        adapter.notifyItemInserted(serials.size());
+                    }
                 }
             }
             adapter.setLoaded();
-//            adapter.notifyDataSetChanged();
         }
         getLoaderManager().destroyLoader(id);
     }
@@ -177,5 +161,11 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
 
     }
 
-
+    private boolean contains(List<Serial> sList, Serial s) {
+        for (Serial serial : sList) {
+            if (serial.getCode().equals(s.getCode()))
+                return true;
+        }
+        return false;
+    }
 }

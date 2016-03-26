@@ -31,7 +31,7 @@ public class SerialRecyclerViewAdapter extends RecyclerView.Adapter {
     private final List<Serial> mValues;
     private final boolean mTwoPane;
     private final AppCompatActivity activity;
-    private int visibleThreshold = 5;
+    private int visibleThreshold = 1;
     private int lastVisibleItem, totalItemCount;
     private boolean loading;
     private OnLoadMoreListener onLoadMoreListener;

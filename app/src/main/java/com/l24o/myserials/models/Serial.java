@@ -2,6 +2,7 @@ package com.l24o.myserials.models;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -118,4 +119,17 @@ public class Serial extends RealmObject {
     public void setSeasons(RealmList<Season> seasons) {
         this.seasons = seasons;
     }
+/*
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Serial serial = (Serial) o;
+        return !(getCode()!= null ? !getCode().equals(serial.getCode()) : serial.getCode() != null);
+    }
+
+    @Override
+    public int hashCode() {
+        return code != null ? code.hashCode() : 0;
+    }*/
 }
