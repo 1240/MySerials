@@ -34,6 +34,7 @@
 
                 <TextView
                     android:id="@+id/name"
+                    android:text="El Pooch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceListItem" />
@@ -41,8 +42,9 @@
                 <TextView
                     android:id="@+id/lastEpisodeDateAndCode"
                     android:layout_width="wrap_content"
+                    android:text="09-18 22.06.16"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceListItem" />
+                    android:textAppearance="?attr/textAppearanceListItemSmall" />
             </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>
