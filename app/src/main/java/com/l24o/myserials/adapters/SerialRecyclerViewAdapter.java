@@ -56,8 +56,8 @@ public class SerialRecyclerViewAdapter extends RecyclerView.Adapter {
                             totalItemCount = linearLayoutManager.getItemCount();
                             lastVisibleItem = linearLayoutManager
                                     .findLastVisibleItemPosition();
-                            if (!loading
-                                    && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                            if ((!loading && totalItemCount <= (lastVisibleItem + visibleThreshold))
+                                    && lastVisibleItem > 0) {
                                 if (onLoadMoreListener != null) {
                                     onLoadMoreListener.onLoadMore();
                                 }
@@ -135,7 +135,7 @@ public class SerialRecyclerViewAdapter extends RecyclerView.Adapter {
         return mValues.size();
     }
 
-    public void swap(ArrayList<Serial> datas) {
+    public void swap(List<Serial> datas) {
         mValues.clear();
         mValues.addAll(datas);
         notifyDataSetChanged();

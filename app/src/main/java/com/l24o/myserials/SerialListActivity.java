@@ -41,6 +41,7 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
     private boolean byLike = false;
     private SerialRecyclerViewAdapter adapter;
     private List<Serial> serials;
+    private String query = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,12 +96,19 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                from = serials.size();
+                serials.clear();
+                adapter.notifyDataSetChanged();
+                serials.add(null);
+                adapter.notifyItemInserted(serials.size() - 1);
+                getSupportLoaderManager().restartLoader(R.id.loader, Bundle.EMPTY, SerialListActivity.this);
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false;
+                SerialListActivity.this.query = newText;
+                return true;
             }
         });
         return true;
@@ -129,7 +137,9 @@ public class SerialListActivity extends AppCompatActivity implements LoaderManag
     public Loader<Response> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case R.id.loader:
-                return new RetorfitLoader(this, from, "");
+                if (query == null)
+                    query = "";
+                return new RetorfitLoader(this, from, query);
             default:
                 return null;
         }
