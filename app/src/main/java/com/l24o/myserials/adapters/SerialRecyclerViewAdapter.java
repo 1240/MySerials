@@ -16,11 +16,16 @@ import android.widget.TextView;
 import com.l24o.myserials.R;
 import com.l24o.myserials.SerialDetailActivity;
 import com.l24o.myserials.SerialDetailFragment;
+import com.l24o.myserials.models.Episode;
+import com.l24o.myserials.models.Season;
 import com.l24o.myserials.models.Serial;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
+
+import io.realm.RealmList;
 
 /**
  * @author chuff on 14.03.2016.
@@ -48,23 +53,23 @@ public class SerialRecyclerViewAdapter extends RecyclerView.Adapter {
 
 
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                        @Override
-                        public void onScrolled(RecyclerView recyclerView,
-                                               int dx, int dy) {
-                            super.onScrolled(recyclerView, dx, dy);
+                @Override
+                public void onScrolled(RecyclerView recyclerView,
+                                       int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
 
-                            totalItemCount = linearLayoutManager.getItemCount();
-                            lastVisibleItem = linearLayoutManager
-                                    .findLastVisibleItemPosition();
-                            if ((!loading && totalItemCount <= (lastVisibleItem + visibleThreshold))
-                                    && lastVisibleItem > 0) {
-                                if (onLoadMoreListener != null) {
-                                    onLoadMoreListener.onLoadMore();
-                                }
-                                loading = true;
-                            }
+                    totalItemCount = linearLayoutManager.getItemCount();
+                    lastVisibleItem = linearLayoutManager
+                            .findLastVisibleItemPosition();
+                    if ((!loading && totalItemCount <= (lastVisibleItem + visibleThreshold))
+                            && lastVisibleItem > 0) {
+                        if (onLoadMoreListener != null) {
+                            onLoadMoreListener.onLoadMore();
                         }
-                    });
+                        loading = true;
+                    }
+                }
+            });
         }
     }
 
@@ -101,6 +106,8 @@ public class SerialRecyclerViewAdapter extends RecyclerView.Adapter {
             Serial serial = mValues.get(position);
             vholder.mItem = serial;
             vholder.mName.setText(serial.getName());
+            vholder.mCode.setText(getLastEpisode(serial).getCode());
+            vholder.mDate.setText(new SimpleDateFormat("dd MMM yyyy", new Locale("ru", "RU")).format(getLastEpisode(serial).getDate()));
             Picasso.with(activity)
                     .load(serial.getUrl())
                     .error(R.drawable.ic_broken_image_black_48dp)
@@ -149,6 +156,17 @@ public class SerialRecyclerViewAdapter extends RecyclerView.Adapter {
         this.onLoadMoreListener = onLoadMoreListener;
     }
 
+    private Episode getLastEpisode(Serial serial) {
+        Season first = serial.getSeasons().first();
+        RealmList<Episode> episodes = first.getEpisodes();
+        for (Episode ep : episodes) {
+            if (!ep.getCode().contains("#")) {
+                return ep;
+            }
+        }
+        return episodes.last();
+    }
+
     public static class ProgressViewHolder extends RecyclerView.ViewHolder {
         public ProgressBar progressBar;
 
@@ -162,12 +180,16 @@ public class SerialRecyclerViewAdapter extends RecyclerView.Adapter {
         public final View mView;
         public final TextView mName;
         public final ImageView mImage;
+        public final TextView mCode;
+        public final TextView mDate;
         public Serial mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mName = (TextView) view.findViewById(R.id.name);
+            mDate = (TextView) view.findViewById(R.id.lastEpisodeDate);
+            mCode = (TextView) view.findViewById(R.id.lastEpisodeDate);
             mImage = (ImageView) view.findViewById(R.id.image);
         }
 
